@@ -71,8 +71,8 @@ export type DevBindingsOptions = {
 	 */
 	persist?: false | string;
 
-	queueProducers?: WorkerOptions["queueProducers"];
-	workers?: WorkerOptions["workers"];
+	queueProducers?: WorkerOptions['queueProducers'];
+	workers?: WorkerOptions[];
 };
 
 /**
@@ -89,14 +89,14 @@ async function instantiateMiniflare(
 
 	const { kvNamespaces, r2Buckets, d1Databases, services, textBindings, queueProducers } =
 		options;
-	const bindings: Partial<WorkerOptions> = {
+	const bindings = {
 		bindings: textBindings,
 		kvNamespaces,
 		durableObjects,
 		r2Buckets,
 		d1Databases,
 		services,
-		queueProducers
+		queueProducers,
 	};
 
 	const serviceBindings = await getServiceBindings(services);

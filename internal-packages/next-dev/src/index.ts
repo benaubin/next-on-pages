@@ -70,6 +70,9 @@ export type DevBindingsOptions = {
 	 * If `false` is specified no data is persisted on the filesystem.
 	 */
 	persist?: false | string;
+
+	queueProducers?: WorkerOptions["queueProducers"];
+	workers?: WorkerOptions["workers"];
 };
 
 /**
@@ -84,15 +87,16 @@ async function instantiateMiniflare(
 	const { workerOptions, durableObjects } =
 		(await getDOBindingInfo(options.durableObjects)) ?? {};
 
-	const { kvNamespaces, r2Buckets, d1Databases, services, textBindings } =
+	const { kvNamespaces, r2Buckets, d1Databases, services, textBindings, queueProducers } =
 		options;
-	const bindings = {
+	const bindings: Partial<WorkerOptions> = {
 		bindings: textBindings,
 		kvNamespaces,
 		durableObjects,
 		r2Buckets,
 		d1Databases,
 		services,
+		queueProducers
 	};
 
 	const serviceBindings = await getServiceBindings(services);
@@ -105,6 +109,7 @@ async function instantiateMiniflare(
 			serviceBindings,
 		},
 		...(workerOptions ? [workerOptions] : []),
+		...(options.workers ? options.workers : [])
 	];
 
 	// we let the user define where to persist the data, we default back
